@@ -1,1 +1,6 @@
-export type Engine = "yoda" | "pirate";
+export const ENGINES = {
+    yoda: "yoda",
+    pirate: "pirate",
+} as const;
+
+export type Engine = keyof typeof ENGINES;

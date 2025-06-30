@@ -1,5 +1,5 @@
 import type { Translation } from "domain/types/Translation";
-import type { Engine } from "domain/types/Engine";
+import { ENGINES, type Engine } from "domain/types/Engine";
 import BaseTranslationRepo from "../repo/BaseTranslationRepo";
 import CacheService from "./CacheService";
 
@@ -23,7 +23,7 @@ class DefaultFunTranslationService implements FunTranslationService {
     };
   }
 
-  async getTranslation(text: string, type: Engine = "yoda") {
+  async getTranslation(text: string, type: Engine = ENGINES.yoda) {
     const repo = this.repos[type];
     const response = await repo.getTranslation(text);
     return await response.json();

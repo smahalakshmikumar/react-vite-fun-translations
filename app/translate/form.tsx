@@ -1,65 +1,91 @@
-import { useMemo, useState } from "react";
-import Button from "view/components/Button";
-import Input from "view/components/Input";
-import type { Engine } from "domain/types/Engine";
+import { useEffect, useMemo, useState } from "react";
+import { ENGINES, type Engine } from "domain/types/Engine";
+import type { Translation } from "domain/types/Translation";
 import { createFunTranslationService } from "io/service/FunTranslationService";
 
-export function TranslateForm() {
+export function TranslateForm({
+  onSuccess,
+  reset,
+}: {
+  onSuccess: (t: Translation) => void;
+  reset?: boolean;
+}) {
   const [text, setText] = useState("");
-  const [type, setType] = useState<Engine>("yoda");
+  const [type, setType] = useState<Engine>(ENGINES.yoda);
   const [result, setResult] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const service = useMemo(() => createFunTranslationService(), []);
+
+  // Reset form when reset changes to true
+  useEffect(() => {
+    if (reset) {
+      setText("");
+      setType(ENGINES.yoda);
+      setResult(null);
+      setLoading(false);
+    }
+  }, [reset]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setResult(null);
-
     try {
       const translated = await service.getTranslation(text, type);
       setResult(translated.contents.translated);
+      onSuccess(translated);
     } catch (err) {
       setResult("Something went wrong!");
     } finally {
       setLoading(false);
+      setText(""); // clear input
     }
   };
 
   return (
-    <form className="contents" onSubmit={handleSubmit}>
-      <fieldset className="flex flex-col items-start gap-6">
-        <Input
-          className="w-full"
-          placeholder="Enter the text to translate here"
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div>
+        <label className="block mb-1 font-semibold">Text to Translate</label>
+        <textarea
+          className="w-full p-3 border rounded resize-none"
+          rows={4}
+          placeholder="Enter text here..."
           value={text}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            setText(e.target.value)
-          }
+          onChange={(e) => setText(e.target.value)}
+          required
         />
-        <label className="flex flex-col">
-          <span className="mb-1 font-semibold">Choose Translation:</span>
-          <select
-            value={type}
-            onChange={(e) => setType(e.target.value as Engine)}
-            className="p-2 border rounded"
-          >
-            <option value="yoda">Yoda</option>
-            <option value="pirate">Pirate</option>
-          </select>
-        </label>
-        <Button
-          type="submit"
-          className="p-3 border border-amber-400 bg-amber-50 rounded-md"
+      </div>
+
+      <div>
+        <label className="block mb-1 font-semibold">Translation Type</label>
+        <select
+          value={type}
+          onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+            const value = e.target.value;
+            if (value === ENGINES.yoda || value === ENGINES.pirate) {
+              setType(value);
+            }
+          }}
+          className="w-full p-2 border rounded"
         >
-          {loading ? "Translating..." : "Translate"}
-        </Button>
-        {result && (
-          <div className="mt-4 p-4 bg-amber-100 border border-amber-400 rounded-md">
-            <strong>Translated:</strong> {result}
-          </div>
-        )}
-      </fieldset>
+          <option value={ENGINES.yoda}>Yoda</option>
+          <option value={ENGINES.pirate}>Pirate</option>
+        </select>
+      </div>
+
+      <button
+        type="submit"
+        className="px-4 py-2 bg-amber-400 text-white rounded disabled:opacity-50"
+        disabled={loading || text.trim().length === 0}
+      >
+        {loading ? "Translating..." : "Translate"}
+      </button>
+
+      {result && (
+        <div className="p-4 border border-amber-400 bg-amber-50 rounded">
+          <strong>Translated:</strong> {result}
+        </div>
+      )}
     </form>
   );
 }
