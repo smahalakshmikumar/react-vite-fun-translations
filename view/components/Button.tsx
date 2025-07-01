@@ -1,13 +1,34 @@
-import clsx from "clsx";
 
-export default function Button({ className, ...props }) {
+import React from "react";
+
+export function PrimaryButton({
+  children,
+  ...props
+}: React.ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button
-      className={clsx(
-        "p-3 border border-amber-400 bg-amber-50  rounded-md",
-        className
-      )}
       {...props}
-    />
+      className={`px-4 py-2 rounded bg-amber-400 text-white disabled:opacity-50 cursor-pointer ${
+        props.className ?? ""
+      }`}
+    >
+      {children}
+    </button>
+  );
+}
+
+export function TextButton({
+  children,
+  ...props
+}: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  return (
+    <button
+      {...props}
+      className={`text-xs text-red-500 hover:underline bg-transparent px-0 py-0 rounded-none cursor-pointer ${
+        props.className ?? ""
+      }`}
+    >
+      {children}
+    </button>
   );
 }
