@@ -2,8 +2,6 @@ import type { Translation } from "domain/types/Translation";
 import { ENGINES, type Engine } from "domain/types/Engine";
 import BaseTranslationRepo from "../repo/BaseTranslationRepo";
 import CacheService from "./CacheService";
-import { fromDto } from "io/codec/fun-translation";
-import { MockFunTranslationService } from "./MockTranslationService";
 
 export interface FunTranslationService {
   getTranslation(text: string, type: Engine): Promise<Translation>;
