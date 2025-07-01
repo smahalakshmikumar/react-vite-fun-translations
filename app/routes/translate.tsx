@@ -1,27 +1,34 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { TranslateForm } from "../translate/form";
 import type { Translation } from "domain/types/Translation";
+import { createFunTranslationService } from "io/service/FunTranslationService";
 
 export default function Translate() {
   const [history, setHistory] = useState<Translation[]>([]);
-  const [selected, setSelected] = useState<Translation | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [reset, setReset] = useState(false); // boolean reset flag
+  const service = useMemo(() => createFunTranslationService(), []);
+  const historyStorageKey = "translation-history"
 
   const addToHistory = (translation: Translation) => {
     setHistory((prev) => [translation, ...prev]);
-    setSelected(translation);
+    setSelectedIndex(0); // newest item is at index 0
   };
 
   // Load history from localStorage on mount
   useEffect(() => {
-    const saved = localStorage.getItem("translation-history");
+    const saved = localStorage.getItem(historyStorageKey);
     if (saved) setHistory(JSON.parse(saved));
   }, []);
 
   // Save history on change
   useEffect(() => {
-    localStorage.setItem("translation-history", JSON.stringify(history));
+    if (history.length === 0) {
+      localStorage.removeItem(historyStorageKey);
+    } else {
+      localStorage.setItem(historyStorageKey, JSON.stringify(history));
+    }
   }, [history]);
 
   // After reset flag is true, immediately set back to false
@@ -31,10 +38,9 @@ export default function Translate() {
 
   const clearHistory = () => {
     setHistory([]);
-    setSelected(null);
     setReset(true); // trigger form reset
+    service.clearCache();
   };
-
 
   return (
     <div className="flex flex-col md:flex-row h-full min-h-screen overflow-hidden">
@@ -64,11 +70,10 @@ export default function Translate() {
             <li
               key={idx}
               onClick={() => {
-                setSelected(t);
                 setSidebarOpen(false); // close on mobile tap
               }}
               className={`p-2 rounded cursor-pointer ${
-                selected === t
+                selectedIndex === idx
                   ? "bg-amber-200 font-semibold"
                   : "hover:bg-gray-100"
               }`}
@@ -90,7 +95,11 @@ export default function Translate() {
       {/* Main */}
       <main className="flex-1 p-4 md:p-8 overflow-y-auto">
         <div className="max-w-xl mx-auto space-y-8">
-          <TranslateForm onSuccess={addToHistory} reset={reset}/>
+          <TranslateForm
+            onSuccess={addToHistory}
+            reset={reset}
+            service={service}
+          />
         </div>
       </main>
     </div>
