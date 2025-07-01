@@ -1,20 +1,21 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { ENGINES, type Engine } from "domain/types/Engine";
 import type { Translation } from "domain/types/Translation";
-import { createFunTranslationService } from "io/service/FunTranslationService";
+import type CacheService from "io/service/CacheService";
 
 export function TranslateForm({
   onSuccess,
   reset,
+  service,
 }: {
   onSuccess: (t: Translation) => void;
-  reset?: boolean;
+  reset: boolean;
+  service: CacheService;
 }) {
   const [text, setText] = useState("");
   const [type, setType] = useState<Engine>(ENGINES.yoda);
   const [result, setResult] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const service = useMemo(() => createFunTranslationService(), []);
 
   // Reset form when reset changes to true
   useEffect(() => {
