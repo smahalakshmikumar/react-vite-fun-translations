@@ -38,7 +38,12 @@ export function Sidebar({
         ))}
       </ul>
       {history.length > 0 && (
-        <TextButton onClick={clearHistory}>Clear history</TextButton>
+        <TextButton
+          className="text-xs text-red-500 hover:underline bg-transparent px-0 py-0 rounded-none cursor-pointer"
+          onClick={clearHistory}
+        >
+          Clear history
+        </TextButton>
       )}
     </aside>
   );

@@ -25,13 +25,7 @@ export function TextButton({
   ...props
 }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
-    <button
-      {...props}
-      className={clsx(
-        "text-xs text-red-500 hover:underline bg-transparent px-0 py-0 rounded-none cursor-pointer",
-        className
-      )}
-    >
+    <button {...props} className={clsx(className)}>
       {children}
     </button>
   );
