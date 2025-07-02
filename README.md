@@ -11,7 +11,6 @@ This is a modern React-based client application for translating text using the [
 - The app uses a **cache service** to avoid repeated API calls for the same input, improving performance and respecting API limits.
 - Both the **translation cache and history are saved to local storage**, so they **persist across page refreshes**.
 - The UI is **composed with atomic design principles**, separating components into atoms, molecules, and organisms for better modularity and maintainability.
-- The app is built using **React Router**, **TypeScript**, and **Tailwind CSS** for styling.
 
 ## Architecture Highlights
 
