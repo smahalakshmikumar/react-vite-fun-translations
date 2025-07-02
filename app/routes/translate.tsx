@@ -10,7 +10,7 @@ export default function Translate() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const historyStorageKey = "translation-history";
 
-  // Load history from localStorage once on mount.
+  // Load translation history from localStorage once on  mount
   useEffect(() => {
     try {
       const saved = localStorage.getItem(historyStorageKey);
@@ -22,11 +22,12 @@ export default function Translate() {
       }
     } catch (error) {
       console.warn("Could not load history from localStorage:", error);
-      // fallback: just keep history empty
+      // fallback: keep history empty if load fails
     }
-    setSelectedIndex(-1);
+    setSelectedIndex(-1); // reset selection on load
   }, []);
 
+  // Helper to save current history state to localStorage
   const saveHistoryToStorage = (data: Translation[]) => {
     try {
       localStorage.setItem(historyStorageKey, JSON.stringify(data));
@@ -35,7 +36,7 @@ export default function Translate() {
     }
   };
 
-  // addToHistory
+  // Add a new translation to history (newest first), update selection, and save
   const addToHistory = (translation: Translation) => {
     const updated = [translation, ...history];
     setHistory(updated);
@@ -43,7 +44,7 @@ export default function Translate() {
     saveHistoryToStorage(updated);
   };
 
-  // clearHistory
+  // Clear all history and reset selection, persist empty array
   const clearHistory = () => {
     setHistory([]);
     setSelectedIndex(-1);
@@ -52,20 +53,23 @@ export default function Translate() {
 
   return (
     <div className="flex flex-col md:flex-row h-full min-h-screen overflow-hidden">
+      {/* Toggle button for sidebar visibility on mobile */}
       <MobileToggle
         sidebarOpen={sidebarOpen}
         toggleSidebar={() => setSidebarOpen(!sidebarOpen)}
       />
+      {/* Sidebar showing translation history and controls */}
       <Sidebar
         sidebarOpen={sidebarOpen}
         history={history}
         selectedIndex={selectedIndex}
         setSelectedIndex={(index) => {
           setSelectedIndex(index);
-          setSidebarOpen(false);
+          setSidebarOpen(false); // close sidebar on selection (mobile UX)
         }}
         clearHistory={clearHistory}
       />
+      {/* Form to submit text for translation */}
       <TranslateForm onSuccess={addToHistory} />
     </div>
   );

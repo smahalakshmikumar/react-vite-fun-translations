@@ -9,6 +9,7 @@ export interface FunTranslationService {
 export const FUN_TRANSLATIONS_BASE_URL =
   "https://api.funtranslations.com/translate/";
 
+// Implementation of the translation service using BaseTranslationRepo
 class FunTranslationServiceImpl implements FunTranslationService {
   private repo: BaseTranslationRepo;
   private label: string;
@@ -27,7 +28,7 @@ class FunTranslationServiceImpl implements FunTranslationService {
   }
 }
 
-// Factory
+// Factory function to create cached Yoda translation service
 export const createYodaTranslationService = () =>
   new CacheTranslationService(
     new FunTranslationServiceImpl(
@@ -35,8 +36,9 @@ export const createYodaTranslationService = () =>
       "Yoda API"
     ),
     "translation-cache-yoda"
-  ); // Decorator
+  );
 
+// Factory function to create cached Pirate translation service
 export const createPirateTranslationService = () =>
   new CacheTranslationService(
     new FunTranslationServiceImpl(
@@ -44,4 +46,4 @@ export const createPirateTranslationService = () =>
       "Pirate API"
     ),
     "translation-cache-pirate"
-  ); // Decorator
+  );
