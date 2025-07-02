@@ -1,43 +1,47 @@
 import type { Translation } from "domain/types/Translation";
-import { ENGINES, type Engine } from "domain/types/Engine";
 import BaseTranslationRepo from "../repo/BaseTranslationRepo";
-import CacheService from "./CacheService";
+import CacheTranslationService from "./CacheTranslationService";
 
 export interface FunTranslationService {
-  getTranslation(text: string, type: Engine): Promise<Translation>;
+  getTranslation(text: string): Promise<Translation>;
 }
-export const FUN_TRANSLATIONS_BASE_URL = "https://api.funtranslations.com/translate/";
 
-const translationURLs: Record<Engine, string> = {
-  yoda: `${FUN_TRANSLATIONS_BASE_URL}yoda.json`,
-  pirate: `${FUN_TRANSLATIONS_BASE_URL}pirate.json`,
-};
+export const FUN_TRANSLATIONS_BASE_URL =
+  "https://api.funtranslations.com/translate/";
 
-class DefaultFunTranslationService implements FunTranslationService {
-  private repos: Record<Engine, BaseTranslationRepo>;
+class FunTranslationServiceImpl implements FunTranslationService {
+  private repo: BaseTranslationRepo;
+  private label: string;
 
-  constructor() {
-    this.repos = {
-      yoda: new BaseTranslationRepo(translationURLs.yoda),
-      pirate: new BaseTranslationRepo(translationURLs.pirate),
-    };
+  constructor(endpoint: string, label: string) {
+    this.repo = new BaseTranslationRepo(endpoint);
+    this.label = label;
   }
 
-  async getTranslation(text: string, type: Engine = ENGINES.yoda): Promise<Translation> {
-    const repo = this.repos[type];
-    const response = await repo.getTranslation(text);
+  async getTranslation(text: string): Promise<Translation> {
+    const response = await this.repo.getTranslation(text);
     if (!response.ok) {
-      throw new Error(`Translation API error: ${response.statusText}`);
+      throw new Error(`${this.label} error: ${response.statusText}`);
     }
-    const data: Translation = await response.json();
-    return data;
+    return await response.json();
   }
 }
 
-const createFunTranslationService = () => {
-  const baseService = new DefaultFunTranslationService();
-  return new CacheService(baseService);
-  //return new MockFunTranslationService(); to test with mock uncomment this 
-};
+// Factory
+export const createYodaTranslationService = () =>
+  new CacheTranslationService(
+    new FunTranslationServiceImpl(
+      `${FUN_TRANSLATIONS_BASE_URL}yoda.json`,
+      "Yoda API"
+    ),
+    "translation-cache-yoda"
+  ); // Decorator
 
-export { DefaultFunTranslationService, createFunTranslationService };
+export const createPirateTranslationService = () =>
+  new CacheTranslationService(
+    new FunTranslationServiceImpl(
+      `${FUN_TRANSLATIONS_BASE_URL}pirate.json`,
+      "Pirate API"
+    ),
+    "translation-cache-pirate"
+  ); // Decorator

@@ -1,7 +1,6 @@
 import type { Translation } from "domain/types/Translation";
-import TranslationHistoryItem from "./TranslationHistoryItem";
-import { TextButton } from "./Button";
-
+import TranslationHistoryItem from "../molecules/TranslationHistoryItem";
+import { TextButton } from "../atoms/Button";
 
 export function Sidebar({
   sidebarOpen,

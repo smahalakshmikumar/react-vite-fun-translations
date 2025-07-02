@@ -3,4 +3,4 @@ export const ENGINES = {
     pirate: "pirate",
 } as const;
 
-export type Engine = keyof typeof ENGINES;
+export type Engine = (typeof ENGINES)[keyof typeof ENGINES];

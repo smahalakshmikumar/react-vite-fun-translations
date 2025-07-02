@@ -17,8 +17,15 @@ export default function TranslationHistoryItem({
       className={`p-2 rounded cursor-pointer ${
         isSelected ? "bg-amber-200 font-semibold" : "hover:bg-gray-100"
       }`}
+      style={{
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        maxWidth: "100%",
+      }}
+      title={translation.contents.translated}
     >
-      {translation.contents.translated.slice(0, 40)}
+      {translation.contents.translated}
     </li>
   );
 }

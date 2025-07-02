@@ -1,16 +1,18 @@
-
 import React from "react";
+import clsx from "clsx";
 
 export function PrimaryButton({
   children,
+  className,
   ...props
 }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button
       {...props}
-      className={`px-4 py-2 rounded bg-amber-400 text-white disabled:opacity-50 cursor-pointer ${
-        props.className ?? ""
-      }`}
+      className={clsx(
+        "px-4 py-2 rounded bg-amber-400 text-white disabled:opacity-50 cursor-pointer",
+        className
+      )}
     >
       {children}
     </button>
@@ -19,14 +21,16 @@ export function PrimaryButton({
 
 export function TextButton({
   children,
+  className,
   ...props
 }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button
       {...props}
-      className={`text-xs text-red-500 hover:underline bg-transparent px-0 py-0 rounded-none cursor-pointer ${
-        props.className ?? ""
-      }`}
+      className={clsx(
+        "text-xs text-red-500 hover:underline bg-transparent px-0 py-0 rounded-none cursor-pointer",
+        className
+      )}
     >
       {children}
     </button>
